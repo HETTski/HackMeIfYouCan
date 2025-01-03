@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+
+.navbar{
+    background: #163832;
+    width: 100%;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+.navbarHeader{
+    display: flex;
+
+justify-content: center;
+margin-left: 2cqb;
+color: #DAF1DE;
+text-align: center;
+font-family: "Roboto Slab";
+font-size: 3rem;
+font-style: normal;
+font-weight: 700;
+line-height: normal;
+  cursor: pointer; 
+}

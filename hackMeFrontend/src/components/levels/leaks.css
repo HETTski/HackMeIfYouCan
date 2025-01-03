@@ -1,0 +1,60 @@
+/* Common styles for headers */
+.header {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+/* Common styles for descriptions */
+.description {
+    margin-bottom: 1rem;
+}
+
+/* Common styles for inputs */
+.input {
+    width: 25%;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-size: large;
+    justify-self: center;
+    margin: 1rem;
+}
+
+/* Common styles for buttons */
+.button {
+    border-radius: 0.5rem;
+    width: 25%;
+    margin: 1rem;
+    justify-self: center;
+    background: #163832;
+    color: #DAF1DE;
+    font-size: large;
+    cursor: pointer;
+}
+
+/* Common styles for messages */
+.message {
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #333;
+}
+
+/* Specific styles for A02 component */
+.A02input {
+    width: 25%;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-size: large;
+    justify-self: center;
+    margin: 1rem;
+}
+
+.A02Button {
+    border-radius: 0.5rem;
+    width: 25%;
+    margin: 1rem;
+    justify-self: center;
+    background: #163832;
+    color: #DAF1DE;
+    font-size: large;
+    cursor: pointer;
+}

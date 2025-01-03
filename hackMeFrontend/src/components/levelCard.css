@@ -1,0 +1,37 @@
+.level-card {
+  width: 100%; 
+  margin: 1rem; 
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  transition: all 0.3s;
+}
+.levelButton{
+    width: 100%;
+    padding: 1rem;
+    border-radius: 1.5rem;
+    background-color: #ffffff00;
+    color: #DAF1DE;
+    font-size: 1rem;
+    font-family: "Roboto Slab";
+    font-weight: 700;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: none;
+}
+.levelButton:hover{
+    background-color: #163832;
+    color: #DAF1DE;
+}
+
+.level-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap; 
+  gap: 1rem; 
+  padding: 1rem;  
+}

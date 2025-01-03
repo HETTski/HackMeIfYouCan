@@ -1,0 +1,5 @@
+import React from 'react';
+
+export default function A102021-ServerSideRequestForgery() {
+  return <div>A10:2021-ServerSideRequestForgery</div>;
+}

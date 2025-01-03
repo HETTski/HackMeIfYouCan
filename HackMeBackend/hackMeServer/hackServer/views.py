@@ -1,6 +1,21 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from hackServer.models import User
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+import base64
+import json
+from django.db import connection
+import requests
+import os
+import logging
+
+# Hardcoded key (vulnerability)
+SECRET_KEY = b'weaksecretkey123'  # 16 bytes key for AES-128
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 def get_secret_data(request):
     username = request.GET.get('username')
@@ -11,3 +26,175 @@ def get_secret_data(request):
         return JsonResponse({'secret_data': secret_data})
     except User.DoesNotExist:
         return JsonResponse({'error': 'User does not exist'}, status=404)
+
+def get_encrypted_data(request):
+    # Example sensitive data
+    sensitive_data = """
+    Sernik
+
+    Zapraszam po najlepszy przepis na sernik z wiaderka, który zawsze się udaje. Składniki przygotujesz w 10 minut. Pieczony sernik bez spodu jest maślany i delikatny. 
+
+    Czas przygotowania: 10 minut
+    Czas pieczenia: 1 godzina 20 minut
+    Liczba porcji: tortownica 24 cm - około 1420 g
+
+    W 100 gramach: Wartość energetyczna 295 kcal Dieta: bezglutenowa, wegetariańska
+
+    Składniki
+
+        1 kg mielonego twarogu np. gęsty z kubełka
+        4 średnie jajka - około 240 g po rozbiciu
+        200 g masła - 1 klasyczna kostka
+        150 g cukru - około 3/4 szklanki
+        1 saszetka budyniu waniliowego bez cukru - około 40 g
+    """
+    cipher = AES.new(SECRET_KEY, AES.MODE_CBC)
+    ct_bytes = cipher.encrypt(pad(sensitive_data.encode(), AES.block_size))
+    iv = base64.b64encode(cipher.iv).decode('utf-8')
+    ct = base64.b64encode(ct_bytes).decode('utf-8')
+    encrypted_data = iv + ct
+    return JsonResponse({'encrypted_data': encrypted_data})
+
+@csrf_exempt
+def decrypt_data(request):
+    try:
+        data = json.loads(request.body)
+        key = data.get('key').encode()  # Ensure the key is in bytes
+        encrypted_data = data.get('encrypted_data')
+
+        # Decrypt the data using the provided key
+        iv = base64.b64decode(encrypted_data[:24])
+        ct = base64.b64decode(encrypted_data[24:])
+        cipher = AES.new(key, AES.MODE_CBC, iv)
+        decrypted_data = unpad(cipher.decrypt(ct), AES.block_size).decode('utf-8')
+
+        return JsonResponse({'decrypted_data': decrypted_data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def vulnerable_search(request):
+    try:
+        data = json.loads(request.body)
+        search_term = data.get('search_term')
+
+        # Vulnerable SQL query (SQL Injection)
+        query = f"SELECT * FROM hackServer_user WHERE username LIKE '%{search_term}%'"
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+        # Convert the result to a list of dictionaries
+        result = [
+            {"id": row[0], "username": row[1], "email": row[2], "is_admin": row[3], "secret_data": row[4]}
+            for row in rows
+        ]
+
+        return JsonResponse({'result': result})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def change_user_role(request):
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        new_role = data.get('new_role')
+
+        # Insecure design: No authorization checks
+        user = User.objects.get(username=username)
+        user.is_admin = new_role.lower() == 'admin'
+        user.save()
+
+        return JsonResponse({'status': 'success', 'message': f'User {username} role changed to {new_role}'})
+    except User.DoesNotExist:
+        return JsonResponse({'error': 'User does not exist'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def get_sensitive_info(request):
+    try:
+        # Security misconfiguration: Exposing sensitive information
+        sensitive_info = {
+            "db_password": "supersecretpassword",
+            "api_key": "12345-ABCDE",
+            "admin_email": "admin@example.com"
+        }
+        return JsonResponse({'sensitive_info': sensitive_info})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def fetch_data_from_vulnerable_api(request):
+    try:
+        # Vulnerable and outdated component: Using an outdated version of requests library
+        response = requests.get('http://vulnerable-api.example.com/data')
+        data = response.json()
+        return JsonResponse({'data': data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def insecure_login(request):
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+
+        # Vulnerable authentication: No proper password validation
+        user = User.objects.get(username=username)
+        if user:
+            return JsonResponse({'status': 'success', 'message': f'User {username} logged in successfully'})
+        else:
+            return JsonResponse({'status': 'failure', 'message': 'Invalid credentials'}, status=401)
+    except User.DoesNotExist:
+        return JsonResponse({'status': 'failure', 'message': 'Invalid credentials'}, status=401)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def upload_file(request):
+    try:
+        if request.method == 'POST' and request.FILES['file']:
+            uploaded_file = request.FILES['file']
+            file_path = os.path.join('uploads', uploaded_file.name)
+
+            # Vulnerable: No integrity check on the uploaded file
+            with open(file_path, 'wb+') as destination:
+                for chunk in uploaded_file.chunks():
+                    destination.write(chunk)
+
+            return JsonResponse({'status': 'success', 'message': f'File {uploaded_file.name} uploaded successfully'})
+        else:
+            return JsonResponse({'status': 'failure', 'message': 'No file uploaded'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def log_sensitive_info(request):
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        action = data.get('action')
+
+        # Vulnerable logging: Logging sensitive information without sanitization
+        logger.info(f"User {username} performed action: {action}")
+
+        return JsonResponse({'status': 'success', 'message': f'Action {action} logged for user {username}'})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def fetch_url(request):
+    try:
+        data = json.loads(request.body)
+        url = data.get('url')
+
+        # Vulnerable to SSRF: Fetching data from user-provided URL without validation
+        response = requests.get(url)
+        content = response.text
+
+        return JsonResponse({'status': 'success', 'content': content})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
