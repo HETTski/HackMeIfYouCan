@@ -291,3 +291,40 @@ def vulnerable_search(request):
     except Exception as e:
         logger.error(f"Error: {e}")
         return JsonResponse({'error': str(e)}, status=400)
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
+import json
+
+@csrf_exempt
+def secure_login(request):
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            return JsonResponse({'message': 'Login successful'})
+        else:
+            return JsonResponse({'message': 'Invalid credentials'}, status=401)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
+@csrf_exempt
+@login_required
+def secure_upload_file(request):
+    try:
+        if request.method == 'POST' and request.FILES['file']:
+            uploaded_file = request.FILES['file']
+            # Handle the uploaded file (e.g., save it to the server)
+            return JsonResponse({'message': 'File uploaded successfully'})
+        else:
+            return JsonResponse({'message': 'No file uploaded'}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)

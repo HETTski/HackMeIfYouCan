@@ -18,5 +18,10 @@ urlpatterns = [
     path('api/upload-file/', views.upload_file, name='upload_file'),
     path('api/log-sensitive-info/', views.log_sensitive_info, name='log_sensitive_info'),
     path('api/fetch-url/', views.fetch_url, name='fetch_url'),
+    path('api/secure-login/', views.secure_login, name='secure_login'),
+    path('api/secure-upload-file/', views.secure_upload_file, name='secure_upload_file'), 
+    path('api/secure-log-action/', views.secure_log_action, name='secure_log_action'),
+    path('api/secure-fetch-url/', views.secure_fetch_url, name='secure_fetch_url'),
+    
     
 ]
