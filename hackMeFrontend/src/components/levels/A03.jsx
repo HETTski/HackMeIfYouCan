@@ -10,6 +10,7 @@ function A03() {
     axios
       .post(`http://localhost:8000/api/vulnerable-search/`, { search_term: searchTerm })
       .then((response) => {
+        console.log("Response data:", response.data);
         setResults(response.data.result); // Results from the server
       })
       .catch((error) => {
@@ -23,7 +24,7 @@ function A03() {
       <p className="description">
         W tej części możesz wyszukiwać użytkowników po nazwie. Spróbuj wykorzystać lukę w zabezpieczeniach SQL Injection, aby uzyskać więcej danych.
         <br />
-        <strong>Przykład:</strong> Wprowadź <code>' OR '1'='1</code> jako termin wyszukiwania, aby zobaczyć wszystkie dane użytkowników.
+        <strong>Przykład:</strong> Wprowadź <code>' OR '1'='1' --</code> jako termin wyszukiwania, aby zobaczyć wszystkie dane użytkowników.
       </p>
       <input
         className="input"
@@ -39,8 +40,7 @@ function A03() {
             <p>ID: {result.id}</p>
             <p>Username: {result.username}</p>
             <p>Email: {result.email}</p>
-            <p>Is Admin: {result.is_admin ? "Yes" : "No"}</p>
-            <p>Secret Data: {result.secret_data}</p>
+            <p>Is Staff: {result.is_staff ? "Yes" : "No"}</p>
           </div>
         ))}
       </div>

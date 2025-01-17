@@ -1,23 +1,68 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
 
-.navbar{
-    background: #163832;
-    width: 100%;
-    padding: 10px;
-    display: flex;
-    justify-content: space-between;
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #163832;
+  color: #DAF1DE;
 }
-.navbarHeader{
-    display: flex;
 
-justify-content: center;
-margin-left: 2cqb;
-color: #DAF1DE;
-text-align: center;
-font-family: "Roboto Slab";
-font-size: 3rem;
-font-style: normal;
-font-weight: 700;
-line-height: normal;
+.navbarHeader {
+  display: flex;
+  justify-content: center;
+  margin-left: 2cqb;
+  color: #DAF1DE;
+  text-align: center;
+  font-family: "Roboto Slab";
+  font-size: 3rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
   cursor: pointer; 
+}
+
+.toggleSwitch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.toggleSwitch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggleLabel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  border-radius: 34px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.toggleLabel .toggleButton {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 26px;
+  height: 26px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+input:checked + .toggleLabel {
+  background-color: #ff0000;
+}
+
+input:checked + .toggleLabel .toggleButton {
+  transform: translateX(26px);
 }

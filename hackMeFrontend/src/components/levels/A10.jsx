@@ -23,6 +23,8 @@ function A10() {
       <h1 className="header">2021 - Server-Side Request Forgery (SSRF)</h1>
       <p className="description">
         W tej części możesz pobrać dane z dowolnego URL. Spróbuj wykorzystać lukę w zabezpieczeniach SSRF, aby uzyskać dostęp do wewnętrznych zasobów serwera.
+        <br />
+        <strong>Przykład:</strong> Wprowadź <code>https://jsonplaceholder.typicode.com/posts/1</code> jako URL, aby zobaczyć dane z tego adresu.
       </p>
       <input
         className="input"

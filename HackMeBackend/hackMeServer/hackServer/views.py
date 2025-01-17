@@ -10,6 +10,10 @@ from django.db import connection
 import requests
 import os
 import logging
+from django.contrib.auth import authenticate
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.utils.decorators import method_decorator
+from django.contrib.auth.models import User
 
 # Hardcoded key (vulnerability)
 SECRET_KEY = b'weaksecretkey123'  # 16 bytes key for AES-128
@@ -73,25 +77,31 @@ def decrypt_data(request):
         return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
-def vulnerable_search(request):
+def secure_search(request):
     try:
         data = json.loads(request.body)
         search_term = data.get('search_term')
 
-        # Vulnerable SQL query (SQL Injection)
-        query = f"SELECT * FROM hackServer_user WHERE username LIKE '%{search_term}%'"
+        # Log the search term for debugging
+        logger.info(f"Search term: {search_term}")
+
+        # Secure SQL query
+        query = "SELECT id, username, email, is_staff FROM auth_user WHERE username LIKE %s"
         with connection.cursor() as cursor:
-            cursor.execute(query)
+            cursor.execute(query, [f'%{search_term}%'])
             rows = cursor.fetchall()
 
         # Convert the result to a list of dictionaries
         result = [
-            {"id": row[0], "username": row[1], "email": row[2], "is_admin": row[3], "secret_data": row[4]}
+            {"id": row[0], "username": row[1], "email": row[2], "is_staff": row[3]}
             for row in rows
         ]
 
+        logger.info(f"Query result: {result}")
+
         return JsonResponse({'result': result})
     except Exception as e:
+        logger.error(f"Error: {e}")
         return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
@@ -113,6 +123,30 @@ def change_user_role(request):
         return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def secure_change_user_role(request):
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        new_role = data.get('new_role')
+
+        user = User.objects.get(username=username)
+        if new_role == 'admin':
+            user.is_staff = True
+            user.is_superuser = True
+        else:
+            user.is_staff = False
+            user.is_superuser = False
+        user.save()
+
+        return JsonResponse({'message': f'Role of user {username} changed to {new_role}'})
+    except User.DoesNotExist:
+        return JsonResponse({'message': 'User does not exist'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
 def get_sensitive_info(request):
     try:
         # Security misconfiguration: Exposing sensitive information
@@ -128,11 +162,14 @@ def get_sensitive_info(request):
 @csrf_exempt
 def fetch_data_from_vulnerable_api(request):
     try:
+        logger.info("Received request to fetch data from vulnerable API")
+
         # Vulnerable and outdated component: Using an outdated version of requests library
-        response = requests.get('http://vulnerable-api.example.com/data')
+        response = requests.get('https://jsonplaceholder.typicode.com/posts')
         data = response.json()
         return JsonResponse({'data': data})
     except Exception as e:
+        logger.error(f"Error: {e}")
         return JsonResponse({'error': str(e)}, status=400)
 
 @csrf_exempt
@@ -197,4 +234,60 @@ def fetch_url(request):
 
         return JsonResponse({'status': 'success', 'content': content})
     except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import authenticate
+import json
+
+@csrf_exempt
+def authenticate_user(request):
+    try:
+        data = json.loads(request.body)
+        username = data.get('username')
+        password = data.get('password')
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            return JsonResponse({'authenticated': True})
+        else:
+            return JsonResponse({'authenticated': False})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.db import connection
+import json
+import logging
+
+logger = logging.getLogger(__name__)
+
+@csrf_exempt
+def vulnerable_search(request):
+    try:
+        data = json.loads(request.body)
+        search_term = data.get('search_term')
+
+        # Log the search term for debugging
+        logger.info(f"Search term: {search_term}")
+
+        # Vulnerable SQL query (SQL Injection)
+        query = f"SELECT * FROM auth_user WHERE username LIKE '%{search_term}%'"
+        logger.info(f"Executing query: {query}")
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            rows = cursor.fetchall()
+
+        # Convert the result to a list of dictionaries
+        result = [
+            {"id": row[0], "username": row[4], "email": row[7], "is_staff": row[8]}
+            for row in rows
+        ]
+
+        logger.info(f"Query result: {result}")
+
+        return JsonResponse({'result': result})
+    except Exception as e:
+        logger.error(f"Error: {e}")
         return JsonResponse({'error': str(e)}, status=400)

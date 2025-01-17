@@ -27,17 +27,17 @@ function A08() {
 
   return (
     <div className="leakContent">
-      <h1 className="A08header">2021 - Software and Data Integrity Failures</h1>
-      <p className="A08description">
+      <h1 className="header">2021 - Software and Data Integrity Failures</h1>
+      <p className="description">
         W tej części możesz przesłać plik bez sprawdzania jego integralności. Spróbuj przesłać plik, aby zobaczyć, jak brak sprawdzania integralności może prowadzić do problemów.
       </p>
       <input
-        className="A08input"
+        className="inputA08"
         type="file"
         onChange={(e) => setFile(e.target.files[0])}
       />
-      <button className="A08Button" onClick={uploadFile}>Prześlij plik</button>
-      {message && <p className="A08Message">{message}</p>}
+      <button className="button" onClick={uploadFile}>Prześlij plik</button>
+      {message && <p className="message">{message}</p>}
     </div>
   );
 }
