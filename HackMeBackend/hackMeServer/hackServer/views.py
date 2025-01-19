@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from hackServer.models import User
+from hackServer.models import User  # Ensure this imports the correct User model
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import base64
@@ -30,6 +30,18 @@ def get_secret_data(request):
         return JsonResponse({'secret_data': secret_data})
     except User.DoesNotExist:
         return JsonResponse({'error': 'User does not exist'}, status=404)
+
+@csrf_exempt
+def get_all_users(request):
+    try:
+        users = User.objects.all()
+        user_data = [
+            {"username": user.username, "email": user.email, "secret_data": user.secret_data}
+            for user in users
+        ]
+        return JsonResponse({'users': user_data})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
 
 def get_encrypted_data(request):
     # Example sensitive data
@@ -238,31 +250,74 @@ def fetch_url(request):
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth import authenticate
-import json
-
-@csrf_exempt
-def authenticate_user(request):
-    try:
-        data = json.loads(request.body)
-        username = data.get('username')
-        password = data.get('password')
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            return JsonResponse({'authenticated': True})
-        else:
-            return JsonResponse({'authenticated': False})
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=400)
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.db import connection
+from django.contrib.auth import authenticate, get_user_model
 import json
 import logging
 
+# Set up logging
 logger = logging.getLogger(__name__)
 
+User = get_user_model()
+
+@csrf_exempt
+def authenticate_user(request):
+    """
+    Authenticates a user based on username and password.
+    """
+    if request.method == 'POST':
+        try:
+            # Parse request data
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+
+            # Authenticate user
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                logger.info(f"User {username} authenticated successfully.")
+                return JsonResponse({'authenticated': True, 'message': 'Authentication successful'}, status=200)
+            else:
+                logger.warning(f"Failed authentication attempt for username: {username}")
+                return JsonResponse({'authenticated': False, 'message': 'Invalid credentials'}, status=401)
+        except Exception as e:
+            logger.error(f"Error during authentication: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+
+
+@csrf_exempt
+def register_user(request):
+    """
+    Registers a new user.
+    """
+    if request.method == 'POST':
+        try:
+            # Parse request data
+            data = json.loads(request.body)
+            username = data.get('username')
+            password = data.get('password')
+            email = data.get('email', '')
+
+            # Validate input
+            if not username or not password:
+                return JsonResponse({'error': 'Username and password are required'}, status=400)
+
+            # Create a new user
+            if User.objects.filter(username=username).exists():
+                return JsonResponse({'error': 'Username already exists'}, status=400)
+
+            user = User.objects.create_user(username=username, password=password, email=email)
+            user.save()
+            logger.info(f"User {username} registered successfully.")
+            return JsonResponse({'message': 'User registered successfully'}, status=201)
+        except Exception as e:
+            logger.error(f"Error during user registration: {str(e)}")
+            return JsonResponse({'error': str(e)}, status=400)
+    else:
+        return JsonResponse({'error': 'Invalid HTTP method'}, status=405)
+    
+    
 @csrf_exempt
 def vulnerable_search(request):
     try:
