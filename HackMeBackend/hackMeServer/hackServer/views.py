@@ -22,14 +22,22 @@ SECRET_KEY = b'weaksecretkey123'  # 16 bytes key for AES-128
 logger = logging.getLogger(__name__)
 
 def get_secret_data(request):
-    username = request.GET.get('username')
+    # Hardcoded user data
+    users_data = {
+        'admin': 'This is the secret data for the admin.',
+        'user1': 'This is the secret data for user1.'
+    }
+
+    username = request.GET.get('username', 'admin')  # Default to 'admin' if no username is provided
+
     try:
         user = User.objects.get(username=username)
         # Intentionally bypassing authorization checks
-        secret_data = user.secret_data
+        secret_data = users_data.get(username, 'No secret data available for this user.')
         return JsonResponse({'secret_data': secret_data})
     except User.DoesNotExist:
         return JsonResponse({'error': 'User does not exist'}, status=404)
+
 
 @csrf_exempt
 def get_all_users(request):
