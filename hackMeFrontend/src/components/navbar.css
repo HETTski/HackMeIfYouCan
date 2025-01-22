@@ -7,20 +7,31 @@
   padding: 1rem;
   background-color: #163832;
   color: #DAF1DE;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.headerContainer {
+  display: flex;
+  margin-left: 2rem;
+}
+
+.secureNavbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #282F32;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .navbarHeader {
   display: flex;
   justify-content: center;
-  margin-left: 2cqb;
   color: #DAF1DE;
   text-align: center;
   font-family: "Roboto Slab";
   font-size: 3rem;
-  font-style: normal;
-  font-weight: 700;
-  line-height: normal;
-  cursor: pointer; 
+  transition: color 0.3s ease;
 }
 
 .toggleSwitch {
@@ -65,4 +76,10 @@ input:checked + .toggleLabel {
 
 input:checked + .toggleLabel .toggleButton {
   transform: translateX(26px);
+}
+.HackMe {
+  color: #E51E18;
+}
+.IfYouCan{
+  color: #FFFFFF;
 }

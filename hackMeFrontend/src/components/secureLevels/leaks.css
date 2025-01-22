@@ -1,0 +1,112 @@
+/* Import Roboto font */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Apply Roboto font to the body */
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Common styles for headers */
+.header {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: #DAF1DE;
+}
+.leakContent{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-left: 2rem;
+}
+
+/* Common styles for descriptions */
+.description {
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #DAF1DE;
+}
+
+/* Common styles for inputs */
+.input {
+    width: 25%;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-size: large;
+    justify-self: center;
+    margin: 1rem;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
+}
+
+/* Common styles for buttons */
+.button {
+    border-radius: 0.25rem;
+    width: 25%;
+    margin: 1rem;
+    padding: 1rem;
+    justify-self: center;
+    background: #163832;
+    color: #DAF1DE;
+    font-size: large;
+    cursor: pointer;
+    border: none;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+}
+
+/* Common styles for messages */
+.message {
+    margin-top: 1rem;
+    font-size: 2rem;
+    color: #ffffff;
+}
+
+.results{
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #ffffff;
+}
+.data{
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #ffffff;
+}
+/* Specific styles for A02 component */
+.A02input {
+    width: 25%;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-size: large;
+    justify-self: center;
+    margin: 1rem;
+}
+
+.A02Button {
+    border-radius: 0.5rem;
+    width: 25%;
+    margin: 1rem;
+    justify-self: center;
+    background: #163832;
+    color: #DAF1DE;
+    font-size: large;
+    cursor: pointer;
+}
+.A02Encrypted{
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #ffffff;
+}
+.sensitiveInfo{
+    margin-top: 1rem;
+    font-size: 1rem;
+    color: #ffffff;
+}
+.inputA08{
+color: #DAF1DE;
+font-size: large;
+}
+.content{
+    color:#DAF1DE;
+}

@@ -35,3 +35,17 @@
   gap: 1rem; 
   padding: 1rem;  
 }
+.levelHeader{
+  color: #DAF1DE;
+}
+
+.level-card.secure .levelButton:hover {
+  background-color: #7D1416;
+  color: white;
+}
+.level-card.secure {
+  color: white;
+}
+.levelHeader.secure{
+  color: white;
+}

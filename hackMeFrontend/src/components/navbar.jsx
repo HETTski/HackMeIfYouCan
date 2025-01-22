@@ -1,21 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './navbar.css';
 import { useNavigate } from 'react-router-dom';
 
-function Navbar() {
+function Navbar({ isToggled, handleToggle }) {
   const navigate = useNavigate();
-  const [isToggled, setIsToggled] = useState(false);
-
-  const handleToggle = () => {
-    setIsToggled(!isToggled);
-    // Add any additional logic for the toggle switch here
-  };
 
   return (
-    <div className="navbar">
-      <h1 className="navbarHeader" onClick={() => navigate('/')}>
-        HackMeIfYouCan
-      </h1>
+    <div className={isToggled ? "secureNavbar" : "navbar"}>
+      <div className='headerContainer'>
+        <h1 className={`navbarHeader ${isToggled ? "HackMe" : ""}`} onClick={() => navigate('/')}>
+          HackMe
+        </h1>
+        <h1 className={`navbarHeader ${isToggled ? "IfYouCan" : ""}`} onClick={() => navigate('/')}>
+          IfYouCan
+        </h1>
+      </div>
       <div className="toggleSwitch">
         <input
           type="checkbox"
