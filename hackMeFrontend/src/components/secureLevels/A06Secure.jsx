@@ -1,81 +1,35 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React from "react";
 import './leaks.css';
 
 function A06Secure() {
-  const [data, setData] = useState(null);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState("");
-
-  const authenticate = () => {
-    axios
-      .post(`http://localhost:8000/api/authenticate/`, { username, password })
-      .then((response) => {
-        if (response.data.authenticated) {
-          setIsAuthenticated(true);
-          setError("");
-        } else {
-          setError("Invalid credentials");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setError("An error occurred during authentication");
-      });
-  };
-
-  const fetchData = () => {
-    if (isAuthenticated) {
-      axios
-        .get(`http://localhost:8000/api/fetch-data-from-secure-api/`)
-        .then((response) => {
-          setData(response.data.data); // Data from the secure API
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      setError("You must be authenticated to access this data");
-    }
-  };
-
   return (
     <div className="leakContent">
-      <h1 className="header">2021 - Vulnerable and Outdated Components (Secured)</h1>
+      <h1 className="header">Dlaczego należy unikać korzystania z przestarzałych API i komponentów</h1>
       <p className="description">
-        W tej części możesz uzyskać dostęp do danych z zewnętrznego API tylko po zalogowaniu. Zaloguj się, aby uzyskać dostęp do danych.
+        Korzystanie z przestarzałych API i komponentów może wprowadzać znaczące ryzyka bezpieczeństwa i inne problemy do Twojej aplikacji. Ważne jest, aby utrzymywać oprogramowanie na bieżąco, aby zapewnić najlepszą wydajność, bezpieczeństwo i kompatybilność.
       </p>
-      {!isAuthenticated ? (
-        <div>
-          <input
-            className="input"
-            type="text"
-            placeholder="Enter username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            className="input"
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button className="button" onClick={authenticate}>Login</button>
-          {error && <p className="message">{error}</p>}
-        </div>
-      ) : (
-        <div>
-          <button className="button" onClick={fetchData}>Pobierz dane</button>
-          {data && (
-            <div className="data">
-              <pre>{JSON.stringify(data, null, 2)}</pre>
-            </div>
-          )}
-        </div>
-      )}
+      <h2 className="header">Ryzyka związane z korzystaniem z przestarzałych API i komponentów</h2>
+      <ul className="description">
+        <li><strong>Luki bezpieczeństwa:</strong> Przestarzałe komponenty mogą mieć znane luki bezpieczeństwa, które mogą być wykorzystane przez atakujących.</li>
+        <li><strong>Problemy z kompatybilnością:</strong> Starsze API i komponenty mogą nie być kompatybilne z nowszymi technologiami, co prowadzi do problemów z integracją.</li>
+        <li><strong>Brak wsparcia:</strong> Przestarzałe oprogramowanie może nie być już wspierane przez dostawcę, co oznacza brak poprawek bezpieczeństwa i aktualizacji.</li>
+        <li><strong>Spadek wydajności:</strong> Nowsze wersje oprogramowania często zawierają ulepszenia wydajności, które nie są obecne w starszych wersjach.</li>
+        <li><strong>Ryzyka związane z zgodnością:</strong> Korzystanie z przestarzałego oprogramowania może narazić Cię na ryzyko niezgodności z normami i regulacjami branżowymi.</li>
+      </ul>
+      <h2 className="header">Najlepsze praktyki, aby być na bieżąco</h2>
+      <ul className="description">
+        <li>Regularnie sprawdzaj aktualizacje i poprawki dla wszystkich komponentów oprogramowania.</li>
+        <li>Używaj narzędzi do zarządzania zależnościami, aby zautomatyzować proces aktualizacji.</li>
+        <li>Subskrybuj biuletyny bezpieczeństwa i powiadomienia, aby być na bieżąco z lukami bezpieczeństwa.</li>
+        <li>Testuj aktualizacje w środowisku testowym przed wdrożeniem na produkcję.</li>
+        <li>Utrzymuj inwentarz wszystkich komponentów oprogramowania i ich wersji.</li>
+      </ul>
+      <h2 className="header">Dodatkowe zasoby</h2>
+      <ul className="description">
+        <li><a href="https://owasp.org/www-project-top-ten/">OWASP Top Ten</a></li>
+        <li><a href="https://cwe.mitre.org/data/definitions/937.html">CWE-937: OWASP Top Ten 2017 Category A9 - Korzystanie z komponentów z znanymi lukami</a></li>
+        <li><a href="https://www.cisa.gov/uscert/">US-CERT: United States Computer Emergency Readiness Team</a></li>
+      </ul>
     </div>
   );
 }

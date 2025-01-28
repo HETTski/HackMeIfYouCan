@@ -1,94 +1,32 @@
-import React, { useState } from "react";
-import axios from "axios";
+import React from "react";
 import './leaks.css';
 
 function A04Secure() {
-  const [username, setUsername] = useState("");
-  const [newRole, setNewRole] = useState("");
-  const [message, setMessage] = useState("");
-  const [authUsername, setAuthUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState("");
-
-  const authenticate = () => {
-    axios
-      .post(`http://localhost:8000/api/authenticate/`, { username: authUsername, password })
-      .then((response) => {
-        if (response.data.authenticated) {
-          setIsAuthenticated(true);
-          setError("");
-        } else {
-          setError("Invalid credentials");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setError("An error occurred during authentication");
-      });
-  };
-
-  const changeRole = () => {
-    if (isAuthenticated) {
-      axios
-        .post(`http://localhost:8000/api/secure-change-user-role/`, { username, new_role: newRole })
-        .then((response) => {
-          setMessage(response.data.message); // Message from the server
-        })
-        .catch((error) => {
-          console.error(error);
-          setMessage("An error occurred");
-        });
-    } else {
-      setError("You must be authenticated to change the role");
-    }
-  };
-
   return (
     <div className="leakContent">
-      <h1 className="header">2021 - Insecure Design (Secured)</h1>
+      <h1 className="header">How to Prevent OWASP A4 Insecure Design</h1>
       <p className="description">
-        W tej części możesz zmienić rolę użytkownika. Zaloguj się, aby uzyskać dostęp do zmiany roli użytkownika.
+        Insecure design refers to flaws in the design of software that can lead to security vulnerabilities. It is important to incorporate security into the design phase to prevent such issues.
       </p>
-      {!isAuthenticated ? (
-        <div>
-          <input
-            className="input"
-            type="text"
-            placeholder="Enter username"
-            value={authUsername}
-            onChange={(e) => setAuthUsername(e.target.value)}
-          />
-          <input
-            className="input"
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button className="button" onClick={authenticate}>Login</button>
-          {error && <p className="message">{error}</p>}
-        </div>
-      ) : (
-        <div>
-          <input
-            className="input"
-            type="text"
-            placeholder="Enter username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            className="input"
-            type="text"
-            placeholder="Enter new role"
-            value={newRole}
-            onChange={(e) => setNewRole(e.target.value)}
-          />
-          <button className="button" onClick={changeRole}>Zmień rolę</button>
-          {message && <p className="message">{message}</p>}
-        </div>
-      )}
+      <h2 className="header">Best Practices to Prevent Insecure Design</h2>
+      <ul className="description">
+        <li>Adopt a Secure Development Lifecycle (SDLC)</li>
+        <li>Perform Threat Modeling</li>
+        <li>Use Secure Design Patterns</li>
+        <li>Conduct Regular Security Reviews</li>
+        <li>Implement Security Requirements</li>
+        <li>Use Security Frameworks and Libraries</li>
+        <li>Ensure Proper Authentication and Authorization</li>
+        <li>Validate and Sanitize User Inputs</li>
+        <li>Use Encryption for Sensitive Data</li>
+        <li>Regularly Update and Patch Systems</li>
+      </ul>
+      <h2 className="header">Additional Resources</h2>
+      <ul className="description">
+        <li><a href="https://owasp.org/www-project-top-ten/">OWASP Top Ten</a></li>
+        <li><a href="https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/">OWASP Secure Coding Practices</a></li>
+        <li><a href="https://owasp.org/www-project-application-security-verification-standard/">OWASP ASVS</a></li>
+      </ul>
     </div>
   );
 }

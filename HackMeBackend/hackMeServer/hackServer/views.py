@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from hackServer.models import User  # Ensure this imports the correct User model
+from hackServer.models import User, EncryptedData  # Ensure this imports the correct User model
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 import base64
@@ -391,3 +391,24 @@ def secure_upload_file(request):
             return JsonResponse({'message': 'No file uploaded'}, status=400)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
+
+@csrf_exempt
+def fetch_and_decrypt_data(request):
+    if request.method == 'POST':
+        try:
+            data_id = request.POST.get('data_id')
+            secret_key = request.POST.get('secret_key')
+
+            encrypted_data = EncryptedData.objects.get(id=data_id)
+            if encrypted_data.secret_key != secret_key:
+                return JsonResponse({'error': 'Invalid secret key'}, status=400)
+
+            cipher = AES.new(secret_key.encode(), AES.MODE_CBC, iv=base64.b64decode(encrypted_data.data[:24]))
+            decrypted_data = unpad(cipher.decrypt(base64.b64decode(encrypted_data.data[24:])), AES.block_size).decode()
+
+            return JsonResponse({'decrypted_data': decrypted_data})
+        except EncryptedData.DoesNotExist:
+            return JsonResponse({'error': 'Data not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request method'}, status=405)

@@ -8,3 +8,10 @@ class User(models.Model):
 
     def __str__(self):
         return self.username
+
+class EncryptedData(models.Model):
+    data = models.TextField()
+    secret_key = models.CharField(max_length=32)  # Assuming AES-256
+
+    def __str__(self):
+        return self.data

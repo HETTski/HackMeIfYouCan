@@ -1,95 +1,36 @@
 import React, { useState } from "react";
-import axios from "axios";
 import './leaks.css';
 
 function A03Secure() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [results, setResults] = useState([]);
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [error, setError] = useState("");
-
-  const authenticate = () => {
-    axios
-      .post(`http://localhost:8000/api/authenticate/`, { username, password })
-      .then((response) => {
-        if (response.data.authenticated) {
-          setIsAuthenticated(true);
-          setError("");
-        } else {
-          setError("Invalid credentials");
-        }
-      })
-      .catch((error) => {
-        console.error(error);
-        setError("An error occurred during authentication");
-      });
-  };
-
-  const search = () => {
-    if (isAuthenticated) {
-      axios
-        .post(`http://localhost:8000/api/secure-search/`, { search_term: searchTerm })
-        .then((response) => {
-          console.log("Response data:", response.data);
-          setResults(response.data.result); // Results from the server
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    } else {
-      setError("You must be authenticated to perform this search");
-    }
-  };
+  const [inputValue, setInputValue] = useState("");
 
   return (
     <div className="leakContent">
-      <h1 className="header">2021 - Injection (Secured)</h1>
+      <h1 className="header">Jak zapobiegać atakom SQL Injection</h1>
       <p className="description">
-        W tej części możesz wyszukiwać użytkowników po nazwie. Zaloguj się, aby uzyskać dostęp do wyszukiwania.
+        SQL injection to technika wstrzykiwania kodu, która może zniszczyć Twoją bazę danych. SQL injection jest jedną z najczęstszych technik hakowania stron internetowych. 
+        Polega na umieszczaniu złośliwego kodu w instrukcjach SQL za pośrednictwem wejścia na stronie internetowej.
       </p>
-      {!isAuthenticated ? (
-        <div>
-          <input
-            className="input"
-            type="text"
-            placeholder="Enter username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <input
-            className="input"
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <button className="button" onClick={authenticate}>Login</button>
-          {error && <p className="message">{error}</p>}
-        </div>
-      ) : (
-        <div>
-          <input
-            className="input"
-            type="text"
-            placeholder="Enter search term"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <button className="button" onClick={search}>Szukaj</button>
-          <div className="results">
-            {results.map((result, index) => (
-              <div key={index} className="result">
-                <p>ID: {result.id}</p>
-                <p>Username: {result.username}</p>
-                <p>Email: {result.email}</p>
-                <p>Is Staff: {result.is_staff ? "Yes" : "No"}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      <h2 className="header">Najlepsze praktyki zapobiegania atakom SQL Injection</h2>
+      <ul className="description">
+        <li>Używaj przygotowanych instrukcji (zapytania z parametrami)</li>
+        <li>Używaj procedur składowanych</li>
+        <li>Waliduj dane wejściowe użytkownika</li>
+        <li>Escapuj wszystkie dane dostarczone przez użytkownika</li>
+        <li>Używaj ORM (Object Relational Mapping) Frameworks</li>
+        <li>Ogranicz uprawnienia do bazy danych</li>
+        <li>Regularnie aktualizuj i łataj swoje systemy</li>
+        <li>Używaj zapór aplikacji webowych (WAF)</li>
+      </ul>
+      <div>
+        <input
+          className="input"
+          type="text"
+          placeholder="To pole nic nie robi"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+      </div>
     </div>
   );
 }
